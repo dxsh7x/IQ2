@@ -1,0 +1,1334 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Intractive Quadrilaterals ~ dxsh</title>
+<link rel="icon" type="image/png" href="daksh.png">
+<!-- Light mode favicon -->
+<link rel="icon" type="image/png" href="black.png" media="(prefers-color-scheme: light)">
+<!-- Dark mode favicon -->
+<link rel="icon" type="image/png" href="white.png" media="(prefers-color-scheme: dark)">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: sticky chapter map on the left, theory with a live figure beside each proof; every figure sits on 1 cm graph paper */
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --ink:#13203F; --muted:#55627D; --line:#D6DDEA;
+  --accent:#1F4FD8; --accent-ink:#FFFFFF; --accent-soft:#E4EBFE;
+  --hl:#B45F06; --hl-soft:#FCEBD3; --ok:#0B7A52; --ok-soft:#DDF5EA; --warn:#B42318; --warn-soft:#FDE4E1;
+  --grid:#E1E7F3; --shadow:0 1px 2px rgba(19,32,63,.06),0 10px 28px rgba(19,32,63,.06);
+  --f-display:"Space Grotesk",system-ui,sans-serif; --f-body:Inter,system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C1226; --surface:#141C36; --ink:#E8EDFA; --muted:#9BA8C6; --line:#2B3658;
+  --accent:#7EA3FF; --accent-ink:#0C1226; --accent-soft:#1C2A58;
+  --hl:#F4B25A; --hl-soft:#3A2B14; --ok:#52D9A6; --ok-soft:#12372B; --warn:#FF8F80; --warn-soft:#3F1E1B;
+  --grid:#1C2646; --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1226; --surface:#141C36; --ink:#E8EDFA; --muted:#9BA8C6; --line:#2B3658;
+  --accent:#7EA3FF; --accent-ink:#0C1226; --accent-soft:#1C2A58;
+  --hl:#F4B25A; --hl-soft:#3A2B14; --ok:#52D9A6; --ok-soft:#12372B; --warn:#FF8F80; --warn-soft:#3F1E1B;
+  --grid:#1C2646; --shadow:none; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.65 var(--f-body);-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:30}
+.in{max-width:1220px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);line-height:1.2;text-wrap:balance;margin:0}
+p{margin:0 0 .8em;max-width:68ch}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
+.brand{font:700 1.05rem var(--f-display);display:flex;align-items:center;gap:10px;min-width:0}
+.brand small{font:500 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.tbtn{font:500 .85rem var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+.tbtn:hover{border-color:var(--accent)}
+
+.hero{padding-block:36px 8px}
+.hero h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:-.02em}
+.hero p{font-size:1.08rem;color:var(--muted);margin-top:12px}
+.hero .jump{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.btn{font:600 .9rem var(--f-body);display:inline-block;padding:9px 16px;border-radius:9px;text-decoration:none;border:1px solid var(--accent);color:var(--accent);background:transparent}
+.btn.fill{background:var(--accent);color:var(--accent-ink)}
+.btn:hover{filter:brightness(1.08)}
+
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px;padding-block:24px 64px}
+.map{position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);align-self:start;font-size:.9rem}
+.map h2{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.map ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.map a{display:flex;gap:10px;padding:7px 10px;border-radius:8px;text-decoration:none;color:var(--ink)}
+.map a b{font:500 .78rem var(--f-mono);color:var(--muted);min-width:2.2em;padding-top:2px}
+.map a:hover{background:var(--accent-soft)}
+.map a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.map a.on b{color:var(--accent)}
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr);gap:8px}
+  .map{position:static;overflow-x:auto}
+  .map h2{display:none}
+  .map ol{display:flex;gap:6px;padding-bottom:6px}
+  .map a{white-space:nowrap;border:1px solid var(--line);background:var(--surface)}
+}
+main{min-width:0}
+.sec{padding-top:36px}
+.sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.sec-h .num{font:600 .95rem var(--f-mono);color:var(--accent);background:var(--accent-soft);padding:3px 9px;border-radius:6px}
+.sec-h h2{font-size:clamp(1.45rem,3vw,1.9rem);letter-spacing:-.01em}
+.lead{font-size:1.05rem}
+
+.thm,.ex{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-block:22px;box-shadow:var(--shadow);min-width:0}
+.thm>header,.ex>header{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.tag{align-self:flex-start;font:600 .72rem var(--f-mono);letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:var(--accent);color:var(--accent-ink)}
+.ex .tag{background:var(--hl);color:var(--surface)}
+.thm h3,.ex h3{font-size:1.18rem;font-weight:600}
+.gp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:var(--accent-soft);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.95rem}
+.gp b{display:block;font:600 .72rem var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+@media (max-width:640px){.gp{grid-template-columns:minmax(0,1fr)}}
+
+.proof-h{display:grid;grid-template-columns:2.2em minmax(0,1.25fr) minmax(0,1fr);gap:0 14px;padding:0 12px 6px;font:600 .72rem var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.proof{list-style:none;margin:0 0 16px;padding:0;counter-reset:s;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.proof li{counter-increment:s;display:grid;grid-template-columns:2.2em minmax(0,1.25fr) minmax(0,1fr);gap:2px 14px;padding:9px 12px;border-top:1px solid var(--line)}
+.proof li:first-child{border-top:0}
+.proof li::before{content:counter(s);font:500 .8rem var(--f-mono);color:var(--muted);padding-top:3px}
+.proof li:nth-child(even){background:color-mix(in srgb,var(--accent-soft) 40%,transparent)}
+.proof .rs{color:var(--muted);font-size:.92rem}
+.proof .end{font-weight:600}
+@media (max-width:640px){
+  .proof-h{display:none}
+  .proof li{grid-template-columns:1.8em minmax(0,1fr)}
+  .proof .rs{grid-column:2;font-size:.88rem}
+  .proof .rs::before{content:"Reason: ";font-weight:600}
+}
+.note{border-left:3px solid var(--hl);background:var(--hl-soft);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.95rem;margin-block:14px;max-width:72ch}
+.note b{color:var(--hl)}
+.m{font-family:var(--f-display);font-style:italic;font-weight:500}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-block:16px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.fact h3{font-size:1rem;margin-bottom:4px}
+.fact p{font-size:.92rem;color:var(--muted);margin:0}
+ul.rel{margin:10px 0;padding-left:1.2em;max-width:70ch}
+ul.rel li{margin-block:4px}
+
+.sim{margin:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.sim .stage svg{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.sim figcaption{padding:9px 14px;font-size:.88rem;color:var(--muted);border-top:1px solid var(--line)}
+.controls{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+.controls:empty{display:none}
+.controls label{display:flex;align-items:center;gap:10px;font-size:.88rem;flex-wrap:wrap}
+.controls input[type=range]{width:170px;max-width:100%;accent-color:var(--accent)}
+.controls output{font:500 .85rem var(--f-mono);min-width:4.5em;font-variant-numeric:tabular-nums}
+.controls button,.controls select{font:500 .85rem var(--f-body);padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button:hover{border-color:var(--accent)}
+.readout{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.chip{display:flex;gap:8px;align-items:baseline;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-size:.82rem;color:var(--muted)}
+.chip b{font:500 .82rem var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.chip.ok{background:var(--ok-soft);border-color:var(--ok)}
+.chip.ok,.chip.ok b{color:var(--ok)}
+.chip.no{background:var(--warn-soft);border-color:var(--warn)}
+.chip.no,.chip.no b{color:var(--warn)}
+.chip.big{font:600 1rem var(--f-display);color:var(--ink);background:var(--accent-soft);border-color:var(--accent)}
+.chip.big b{font:700 1.05rem var(--f-display);color:var(--accent)}
+.msg{width:100%;font-size:.88rem;color:var(--warn)}
+
+svg .gridp{stroke:var(--grid);stroke-width:1;fill:none}
+svg .ln{stroke:var(--ink);stroke-width:2.2;fill:none;stroke-linejoin:round;stroke-linecap:round}
+svg .edge{stroke:var(--accent);stroke-width:3;fill:none;stroke-linejoin:round}
+svg .fill{fill:var(--accent);fill-opacity:.13;stroke:none}
+svg .dash{stroke:var(--hl);stroke-width:2.2;stroke-dasharray:7 5;fill:none}
+svg .hlf{fill:var(--hl);fill-opacity:.2;stroke:var(--hl);stroke-width:2.4;stroke-linejoin:round}
+svg .okf{fill:var(--ok);fill-opacity:.2;stroke:var(--ok);stroke-width:2.4;stroke-linejoin:round}
+svg .thin{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .tk{stroke:var(--ink);stroke-width:2;fill:none}
+svg .arc{stroke:var(--hl);stroke-width:2.2;fill:none}
+svg .rt{stroke:var(--hl);stroke-width:2;fill:none}
+svg .c1{fill:var(--accent);fill-opacity:.28;stroke:var(--accent);stroke-width:2}
+svg .c2{fill:var(--hl);fill-opacity:.28;stroke:var(--hl);stroke-width:2}
+svg .c3{fill:var(--ok);fill-opacity:.28;stroke:var(--ok);stroke-width:2}
+svg .c4{fill:var(--warn);fill-opacity:.24;stroke:var(--warn);stroke-width:2}
+svg .vl{font:600 16px var(--f-display);fill:var(--ink);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+svg .lbl{font:500 12.5px var(--f-body);fill:var(--muted);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+svg .lblh{font:600 13px var(--f-body);fill:var(--hl);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+svg .pt{fill:var(--ink)}
+svg .handle{fill:var(--accent);stroke:var(--surface);stroke-width:3;cursor:grab}
+svg .handle:active{cursor:grabbing}
+svg .handle:focus-visible{outline:none;stroke:var(--hl);stroke-width:4}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-block:16px}
+table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+.cmp th,.cmp td{padding:9px 12px;text-align:center;border-bottom:1px solid var(--line)}
+.cmp th:first-child,.cmp td:first-child{text-align:left;font-weight:600}
+.cmp thead th{background:var(--accent-soft);font:600 .8rem var(--f-display)}
+.cmp tbody tr:last-child td{border-bottom:0}
+.cmp .y{color:var(--ok);font-weight:600}
+.cmp .n{color:var(--muted)}
+.cmp caption{caption-side:bottom;text-align:left;padding:8px 12px;font-size:.82rem;color:var(--muted)}
+
+.quiz-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-block:14px;box-shadow:var(--shadow)}
+.quiz-card h3{font-size:1.02rem;font-weight:600;margin-bottom:12px}
+.opts{display:grid;gap:8px}
+.opt{font:500 .95rem var(--f-body);text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.opt.wrong{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.opt:disabled{cursor:default}
+.why{margin-top:10px;font-size:.92rem;color:var(--muted)}
+.score{display:flex;flex-wrap:wrap;align-items:center;gap:14px;font:600 1.1rem var(--f-display);margin-block:14px}
+footer.foot{border-top:1px solid var(--line);padding-block:24px;color:var(--muted);font-size:.88rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.readout:empty{display:none}
+</style>
+
+<div class="top"><div class="in bar">
+  <div class="brand">Intractive Quadrilaterals<small>~ dxsh</small></div>
+  <button class="tbtn" id="themeBtn" type="button" aria-label="Switch between light and dark theme">Theme</button>
+</div></div>
+
+<div class="in hero">
+  <h1>Quadrilaterals</h1>
+  <p>Every figure you can drag beside each proof. Move a vertex and watch the lengths and angles change while the theorem keeps holding.</p>
+  <div class="jump">
+    <a class="btn fill" href="#parallelogram">Start with parallelograms</a>
+    <a class="btn" href="#midpoint">Mid-point theorem</a>
+    <a class="btn" href="#quiz">Test yourself</a>
+  </div>
+</div>
+
+<div class="in layout">
+<nav class="map" aria-label="Chapter map">
+  <h2>Chapter map</h2>
+  <ol>
+    <li><a href="#intro"><b>8.1</b>Introduction</a></li>
+    <li><a href="#angle-sum"><b>8.2</b>Angle sum property</a></li>
+    <li><a href="#types"><b>8.3</b>Types of quadrilaterals</a></li>
+    <li><a href="#parallelogram"><b>8.4</b>Properties of a parallelogram</a></li>
+    <li><a href="#examples-a"><b>Ex</b>Examples 3 to 5</a></li>
+    <li><a href="#condition"><b>8.5</b>Another condition</a></li>
+    <li><a href="#midpoint"><b>8.6</b>The mid-point theorem</a></li>
+    <li><a href="#quiz"><b>Quiz</b>Check your understanding</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section class="sec" id="intro">
+  <div class="sec-h"><span class="num">8.1</span><h2>Introduction</h2></div>
+  <p class="lead">Mark four points and join them in order. If all four lie on one line you get a line segment. If three lie on one line you get a triangle. If no three are collinear you get a closed figure with four sides, called a <b>quadrilateral</b>. This chapter deals with the convex kind, where the figure does not fold inward.</p>
+  <div class="facts">
+    <div class="fact"><h3>4 vertices</h3><p>The corner points A, B, C and D.</p></div>
+    <div class="fact"><h3>4 sides</h3><p>AB, BC, CD and DA.</p></div>
+    <div class="fact"><h3>4 angles</h3><p>∠A, ∠B, ∠C and ∠D, formed at the vertices.</p></div>
+    <div class="fact"><h3>2 diagonals</h3><p>AC and BD, joining opposite vertices.</p></div>
+  </div>
+  <p>Look around the room: the blackboard, a book cover, a table top. Most are rectangles, and a rectangle is a parallelogram, so everything you prove about parallelograms holds for them too.</p>
+
+  <figure class="sim" id="sBurfi">
+    <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+    <figcaption>A rectangle and a parallelogram with the same sides, 4 cm and 3 cm, so the same perimeter of 14 cm. Slide the angle: the parallelogram always covers less area. This is why burfi is cut into parallelograms, so more pieces fit in a tray.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="angle-sum">
+  <div class="sec-h"><span class="num">8.2</span><h2>Angle sum property of a quadrilateral</h2></div>
+  <article class="thm" id="tsum">
+    <header><span class="tag">Angle sum property</span><h3>The sum of the angles of a quadrilateral is 360°.</h3></header>
+    <div class="gp"><div><b>Given</b>Quadrilateral ABCD with diagonal AC.</div><div><b>To prove</b>∠A + ∠B + ∠C + ∠D = 360°</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>In ΔADC: ∠DAC + ∠ACD + ∠D = 180°  … (1)</span><span class="rs">Angle sum property of a triangle</span></li>
+      <li><span>In ΔABC: ∠CAB + ∠ACB + ∠B = 180°  … (2)</span><span class="rs">Angle sum property of a triangle</span></li>
+      <li><span>Adding (1) and (2): ∠DAC + ∠CAB + ∠ACD + ∠ACB + ∠B + ∠D = 360°</span><span class="rs">Adding equal sums</span></li>
+      <li><span>∠DAC + ∠CAB = ∠A and ∠ACD + ∠ACB = ∠C</span><span class="rs">Diagonal AC lies inside ∠A and ∠C</span></li>
+      <li><span class="end">∴ ∠A + ∠B + ∠C + ∠D = 360°</span><span class="rs">Substituting in step 3</span></li>
+    </ol>
+    <figure class="sim" id="sAngle">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Drag any vertex. The four angles change, the total does not. Switch on the diagonal to see the two triangles of the proof.</figcaption>
+    </figure>
+  </article>
+</section>
+
+<section class="sec" id="types">
+  <div class="sec-h"><span class="num">8.3</span><h2>Types of quadrilaterals</h2></div>
+  <p class="lead">Pick a type, then use the sliders. The shape keeps its defining property while everything else is free, and the readout names what you have built.</p>
+
+  <figure class="sim" id="sTypes">
+    <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+    <figcaption>Equal sides share the same number of tick marks. A small square marks a right angle. The dashed lines are the diagonals.</figcaption>
+  </figure>
+
+  <div class="facts">
+    <div class="fact"><h3>Parallelogram</h3><p>Both pairs of opposite sides are parallel.</p></div>
+    <div class="fact"><h3>Rectangle</h3><p>A parallelogram with one right angle, so all four angles are 90°.</p></div>
+    <div class="fact"><h3>Rhombus</h3><p>A parallelogram with all four sides equal.</p></div>
+    <div class="fact"><h3>Square</h3><p>A rectangle with all four sides equal. It is also a rhombus.</p></div>
+    <div class="fact"><h3>Kite</h3><p>Two distinct pairs of equal adjacent sides.</p></div>
+    <div class="fact"><h3>Trapezium</h3><p>Exactly one pair of opposite sides parallel. Those are the bases, the others are the legs.</p></div>
+  </div>
+
+  <ul class="rel">
+    <li>A square is a rectangle and also a rhombus.</li>
+    <li>A rectangle or a rhombus is not necessarily a square.</li>
+    <li>A kite is not a parallelogram, and a trapezium is not a parallelogram, because a parallelogram needs both pairs of opposite sides parallel.</li>
+  </ul>
+  <p class="note"><b>Definition note.</b> Some books, including the NCERT text, call a parallelogram a trapezium too, since it has at least one pair of parallel sides. Here a trapezium means exactly one pair, which keeps the six types separate in the table below.</p>
+
+  <div class="tbl-wrap"><table class="cmp">
+    <caption>* A kite has two pairs of equal adjacent sides, not four equal sides. ** A rhombus has equal diagonals only when it is a square.</caption>
+    <thead><tr><th>Property</th><th>Parallelogram</th><th>Rectangle</th><th>Square</th><th>Rhombus</th><th>Kite</th><th>Trapezium</th></tr></thead>
+    <tbody>
+      <tr><td>Opposite sides parallel</td><td class="y">Both pairs</td><td class="y">Both pairs</td><td class="y">Both pairs</td><td class="y">Both pairs</td><td class="n">No</td><td>One pair</td></tr>
+      <tr><td>All four sides equal</td><td class="n">No</td><td class="n">No</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">No*</td><td class="n">No</td></tr>
+      <tr><td>All angles 90°</td><td class="n">No</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">No</td><td class="n">No</td><td class="n">No</td></tr>
+      <tr><td>Diagonals equal</td><td class="n">No</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">No**</td><td class="n">No</td><td class="n">No</td></tr>
+      <tr><td>Diagonals perpendicular</td><td class="n">No</td><td class="n">No</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">No</td></tr>
+      <tr><td>Diagonals bisect each other</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td><td>One bisects the other</td><td class="n">No</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" id="parallelogram">
+  <div class="sec-h"><span class="num">8.4</span><h2>Properties of a parallelogram</h2></div>
+  <p class="lead">Seven results, in pairs: each theorem is followed by its converse. Every figure below is a parallelogram ABCD with A, B and D draggable. C follows automatically, because that is exactly what a parallelogram is.</p>
+
+  <article class="thm" id="t81">
+    <header><span class="tag">Theorem 8.1</span><h3>A diagonal of a parallelogram divides it into two congruent triangles.</h3></header>
+    <div class="gp"><div><b>Given</b>Parallelogram ABCD with diagonal AC.</div><div><b>To prove</b>ΔABC ≅ ΔCDA</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>BC ∥ AD and AC is a transversal, so ∠BCA = ∠DAC</span><span class="rs">Alternate interior angles</span></li>
+      <li><span>AB ∥ DC and AC is a transversal, so ∠BAC = ∠DCA</span><span class="rs">Alternate interior angles</span></li>
+      <li><span>AC = CA</span><span class="rs">Common side</span></li>
+      <li><span class="end">∴ ΔABC ≅ ΔCDA</span><span class="rs">ASA congruence rule</span></li>
+    </ol>
+    <figure class="sim" id="s81">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Turn ΔABC half a revolution (180°) about O, the centre. It lands exactly on ΔCDA, whatever parallelogram you drag out.</figcaption>
+    </figure>
+  </article>
+
+  <article class="thm" id="t82">
+    <header><span class="tag">Theorem 8.2</span><h3>In a parallelogram, opposite sides are equal.</h3></header>
+    <div class="gp"><div><b>Given</b>Parallelogram ABCD.</div><div><b>To prove</b>AB = DC and AD = BC</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>ΔABC ≅ ΔCDA</span><span class="rs">Theorem 8.1</span></li>
+      <li><span class="end">∴ AB = DC and BC = DA</span><span class="rs">Corresponding parts of congruent triangles (CPCT)</span></li>
+    </ol>
+    <figure class="sim" id="s82">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Matching tick marks show equal sides. Drag a vertex: the pairs stay equal.</figcaption>
+    </figure>
+  </article>
+
+  <article class="thm" id="t83">
+    <header><span class="tag">Theorem 8.3 · converse of 8.2</span><h3>If each pair of opposite sides of a quadrilateral is equal, then it is a parallelogram.</h3></header>
+    <div class="gp"><div><b>Given</b>Quadrilateral ABCD with AB = CD and AD = BC. Draw diagonal AC.</div><div><b>To prove</b>ABCD is a parallelogram</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>In ΔABC and ΔCDA: AB = CD</span><span class="rs">Given</span></li>
+      <li><span>BC = DA</span><span class="rs">Given</span></li>
+      <li><span>AC = CA</span><span class="rs">Common side</span></li>
+      <li><span>ΔABC ≅ ΔCDA</span><span class="rs">SSS congruence rule</span></li>
+      <li><span>∠BAC = ∠DCA</span><span class="rs">CPCT</span></li>
+      <li><span>AB ∥ DC</span><span class="rs">Alternate interior angles are equal (transversal AC)</span></li>
+      <li><span>∠BCA = ∠DAC, so BC ∥ AD</span><span class="rs">CPCT, then alternate angles equal</span></li>
+      <li><span class="end">∴ ABCD is a parallelogram</span><span class="rs">Both pairs of opposite sides are parallel</span></li>
+    </ol>
+    <p class="note">Try it yourself in the <a href="#tester">converse tester</a> at the end of section 8.5.</p>
+  </article>
+
+  <article class="thm" id="t84">
+    <header><span class="tag">Theorem 8.4</span><h3>In a parallelogram, opposite angles are equal.</h3></header>
+    <div class="gp"><div><b>Given</b>Parallelogram ABCD.</div><div><b>To prove</b>∠A = ∠C and ∠B = ∠D</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>AD ∥ BC and AB is a transversal, so ∠A + ∠B = 180°</span><span class="rs">Interior angles on the same side of a transversal</span></li>
+      <li><span>AB ∥ DC and BC is a transversal, so ∠B + ∠C = 180°</span><span class="rs">Interior angles on the same side of a transversal</span></li>
+      <li><span>∠A + ∠B = ∠B + ∠C, so ∠A = ∠C</span><span class="rs">From steps 1 and 2</span></li>
+      <li><span>AB ∥ DC and AD is a transversal, so ∠A + ∠D = 180°</span><span class="rs">Interior angles on the same side of a transversal</span></li>
+      <li><span class="end">∠A + ∠B = ∠A + ∠D, so ∴ ∠B = ∠D</span><span class="rs">From steps 1 and 4</span></li>
+    </ol>
+    <figure class="sim" id="s84">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Opposite angles carry the same number of arcs. Adjacent angles always add up to 180°.</figcaption>
+    </figure>
+  </article>
+
+  <article class="thm" id="t85">
+    <header><span class="tag">Theorem 8.5 · converse of 8.4</span><h3>If each pair of opposite angles of a quadrilateral is equal, then it is a parallelogram.</h3></header>
+    <div class="gp"><div><b>Given</b>Quadrilateral ABCD with ∠A = ∠C and ∠B = ∠D.</div><div><b>To prove</b>ABCD is a parallelogram</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>∠A + ∠B + ∠C + ∠D = 360°</span><span class="rs">Angle sum of a quadrilateral</span></li>
+      <li><span>2∠A + 2∠B = 360°</span><span class="rs">Replace ∠C by ∠A and ∠D by ∠B</span></li>
+      <li><span>∠A + ∠B = 180°</span><span class="rs">Divide by 2</span></li>
+      <li><span>AD ∥ BC</span><span class="rs">Interior angles on the same side of transversal AB add up to 180°</span></li>
+      <li><span>∠B + ∠C = ∠B + ∠A = 180°, so AB ∥ DC</span><span class="rs">Same argument with transversal BC</span></li>
+      <li><span class="end">∴ ABCD is a parallelogram</span><span class="rs">Both pairs of opposite sides are parallel</span></li>
+    </ol>
+  </article>
+
+  <article class="thm" id="t86">
+    <header><span class="tag">Theorem 8.6</span><h3>The diagonals of a parallelogram bisect each other.</h3></header>
+    <div class="gp"><div><b>Given</b>Parallelogram ABCD whose diagonals AC and BD meet at O.</div><div><b>To prove</b>OA = OC and OB = OD</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>In ΔAOB and ΔCOD: ∠OAB = ∠OCD</span><span class="rs">AB ∥ DC, transversal AC, alternate angles</span></li>
+      <li><span>∠OBA = ∠ODC</span><span class="rs">AB ∥ DC, transversal BD, alternate angles</span></li>
+      <li><span>AB = CD</span><span class="rs">Opposite sides of a parallelogram (Theorem 8.2)</span></li>
+      <li><span>ΔAOB ≅ ΔCOD</span><span class="rs">ASA congruence rule</span></li>
+      <li><span class="end">∴ OA = OC and OB = OD</span><span class="rs">CPCT</span></li>
+    </ol>
+    <figure class="sim" id="s86">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>The diagonals cross at O and split each other into equal halves, even in a very slanted parallelogram.</figcaption>
+    </figure>
+  </article>
+
+  <article class="thm" id="t87">
+    <header><span class="tag">Theorem 8.7 · converse of 8.6</span><h3>If the diagonals of a quadrilateral bisect each other, then it is a parallelogram.</h3></header>
+    <div class="gp"><div><b>Given</b>Quadrilateral ABCD with diagonals meeting at O, OA = OC and OB = OD.</div><div><b>To prove</b>ABCD is a parallelogram</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>In ΔAOB and ΔCOD: OA = OC and OB = OD</span><span class="rs">Given</span></li>
+      <li><span>∠AOB = ∠COD</span><span class="rs">Vertically opposite angles</span></li>
+      <li><span>ΔAOB ≅ ΔCOD</span><span class="rs">SAS congruence rule</span></li>
+      <li><span>∠ABO = ∠CDO</span><span class="rs">CPCT</span></li>
+      <li><span>AB ∥ CD</span><span class="rs">Alternate interior angles are equal (transversal BD)</span></li>
+      <li><span>Similarly ΔAOD ≅ ΔCOB, so ∠OAD = ∠OCB and BC ∥ AD</span><span class="rs">SAS, CPCT, alternate angles (transversal AC)</span></li>
+      <li><span class="end">∴ ABCD is a parallelogram</span><span class="rs">Both pairs of opposite sides are parallel</span></li>
+    </ol>
+  </article>
+
+  <article class="ex" id="ex1">
+    <header><span class="tag">Example 1</span><h3>Show that each angle of a rectangle is a right angle.</h3></header>
+    <p>A rectangle is a parallelogram in which one angle is a right angle. Let ABCD be a rectangle with ∠A = 90°.</p>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>AD ∥ BC and AB is a transversal, so ∠A + ∠B = 180°</span><span class="rs">Interior angles on the same side</span></li>
+      <li><span>∠B = 180° − 90° = 90°</span><span class="rs">Since ∠A = 90°</span></li>
+      <li><span>∠C = ∠A = 90° and ∠D = ∠B = 90°</span><span class="rs">Opposite angles of a parallelogram (Theorem 8.4)</span></li>
+      <li><span class="end">∴ Each angle of a rectangle is 90°</span><span class="rs"></span></li>
+    </ol>
+    <figure class="sim" id="sEx1">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Resize the rectangle. The four angles stay at 90°, and the diagonals stay equal, because ΔABC ≅ ΔDCB by SAS.</figcaption>
+    </figure>
+  </article>
+
+  <article class="ex" id="ex2">
+    <header><span class="tag">Example 2</span><h3>Show that the diagonals of a rhombus are perpendicular to each other.</h3></header>
+    <p>Let ABCD be a rhombus whose diagonals meet at O.</p>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>AB = BC = CD = DA</span><span class="rs">Sides of a rhombus</span></li>
+      <li><span>In ΔAOD and ΔCOD: OA = OC</span><span class="rs">Diagonals of a parallelogram bisect each other</span></li>
+      <li><span>OD = OD and AD = CD</span><span class="rs">Common side; sides of the rhombus</span></li>
+      <li><span>ΔAOD ≅ ΔCOD</span><span class="rs">SSS congruence rule</span></li>
+      <li><span>∠AOD = ∠COD</span><span class="rs">CPCT</span></li>
+      <li><span>∠AOD + ∠COD = 180°</span><span class="rs">Linear pair</span></li>
+      <li><span class="end">2∠AOD = 180°, so ∴ ∠AOD = 90°</span><span class="rs">Substituting step 5</span></li>
+    </ol>
+    <figure class="sim" id="sEx2">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Change the side or the angle. The diagonals always cross at 90° and bisect each other.</figcaption>
+    </figure>
+  </article>
+</section>
+
+<section class="sec" id="examples-a">
+  <div class="sec-h"><span class="num">8.4</span><h2>More worked examples on parallelograms</h2></div>
+
+  <article class="ex" id="ex3">
+    <header><span class="tag">Example 3</span><h3>ABC is an isosceles triangle with AB = AC. AD bisects the exterior angle PAC and CD ∥ AB. Show that (i) ∠DAC = ∠BCA and (ii) ABCD is a parallelogram.</h3></header>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>∠ABC = ∠ACB</span><span class="rs">Angles opposite equal sides AB and AC</span></li>
+      <li><span>∠PAC = ∠ABC + ∠ACB = 2∠ACB  … (1)</span><span class="rs">Exterior angle of a triangle</span></li>
+      <li><span>∠PAC = 2∠DAC  … (2)</span><span class="rs">AD bisects ∠PAC</span></li>
+      <li><span>2∠DAC = 2∠ACB, so ∠DAC = ∠BCA  (part i)</span><span class="rs">From (1) and (2)</span></li>
+      <li><span>∠DAC and ∠BCA are alternate angles for BC and AD with transversal AC, so BC ∥ AD</span><span class="rs">Alternate angles are equal</span></li>
+      <li><span>BA ∥ CD</span><span class="rs">Given</span></li>
+      <li><span class="end">∴ ABCD is a parallelogram  (part ii)</span><span class="rs">Both pairs of opposite sides are parallel</span></li>
+    </ol>
+  </article>
+
+  <article class="ex" id="ex4">
+    <header><span class="tag">Example 4</span><h3>Two parallel lines l and m are cut by a transversal p. Show that the quadrilateral formed by the bisectors of the interior angles is a rectangle.</h3></header>
+    <p>Let PS ∥ QR and let p cut them at A and C. The bisectors of ∠PAC and ∠ACQ meet at B. The bisectors of ∠ACR and ∠SAC meet at D. We show ABCD is a rectangle.</p>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>∠PAC = ∠ACR</span><span class="rs">Alternate angles, PS ∥ QR</span></li>
+      <li><span>½∠PAC = ½∠ACR, so ∠BAC = ∠ACD</span><span class="rs">AB and CD are angle bisectors</span></li>
+      <li><span>AB ∥ DC</span><span class="rs">Alternate angles ∠BAC, ∠ACD are equal (transversal AC)</span></li>
+      <li><span>Similarly ∠ACB = ∠CAD, so BC ∥ AD</span><span class="rs">Same argument with ∠ACQ = ∠SAC</span></li>
+      <li><span>ABCD is a parallelogram</span><span class="rs">Both pairs of opposite sides are parallel</span></li>
+      <li><span>∠PAC + ∠CAS = 180°</span><span class="rs">Linear pair</span></li>
+      <li><span>½∠PAC + ½∠CAS = 90°, so ∠BAC + ∠CAD = 90°, that is ∠BAD = 90°</span><span class="rs">Halving step 6</span></li>
+      <li><span class="end">∴ ABCD is a rectangle</span><span class="rs">A parallelogram with one right angle</span></li>
+    </ol>
+  </article>
+
+  <article class="ex" id="ex5">
+    <header><span class="tag">Example 5</span><h3>Show that the bisectors of the angles of a parallelogram form a rectangle.</h3></header>
+    <p>Let P, Q, R, S be the points where the bisectors of ∠A and ∠B, ∠B and ∠C, ∠C and ∠D, ∠D and ∠A of parallelogram ABCD meet.</p>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>In ΔASD: ∠DAS + ∠ADS = ½∠A + ½∠D = ½(∠A + ∠D)</span><span class="rs">DS and AS bisect ∠D and ∠A</span></li>
+      <li><span>½(∠A + ∠D) = ½ × 180° = 90°</span><span class="rs">∠A and ∠D are interior angles on the same side</span></li>
+      <li><span>∠DAS + ∠ADS + ∠DSA = 180°, so ∠DSA = 90°</span><span class="rs">Angle sum of a triangle</span></li>
+      <li><span>∠PSR = ∠DSA = 90°</span><span class="rs">Vertically opposite angles</span></li>
+      <li><span>Similarly ∠APB = ∠SPQ = 90°, ∠PQR = 90° and ∠SRQ = 90°</span><span class="rs">Same argument at B, C</span></li>
+      <li><span class="end">∴ PQRS is a rectangle</span><span class="rs">Equal opposite angles make it a parallelogram (Theorem 8.5), and it has a right angle</span></li>
+    </ol>
+    <figure class="sim" id="sEx5">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Drag A, B or D. The shaded figure PQRS keeps four right angles. Make AB = AD (a rhombus) and it shrinks to a single point.</figcaption>
+    </figure>
+  </article>
+</section>
+
+<section class="sec" id="condition">
+  <div class="sec-h"><span class="num">8.5</span><h2>Another condition for a parallelogram</h2></div>
+  <p class="lead">Theorem 8.8 is the shortest test: one pair of sides that is both equal and parallel is already enough.</p>
+
+  <article class="thm" id="t88">
+    <header><span class="tag">Theorem 8.8</span><h3>A quadrilateral is a parallelogram if a pair of opposite sides is equal and parallel.</h3></header>
+    <div class="gp"><div><b>Given</b>Quadrilateral ABCD with AB ∥ CD and AB = CD. Draw diagonal AC.</div><div><b>To prove</b>ABCD is a parallelogram</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>In ΔABC and ΔCDA: AB = CD</span><span class="rs">Given</span></li>
+      <li><span>∠BAC = ∠DCA</span><span class="rs">AB ∥ CD, transversal AC, alternate angles</span></li>
+      <li><span>AC = CA</span><span class="rs">Common side</span></li>
+      <li><span>ΔABC ≅ ΔCDA</span><span class="rs">SAS congruence rule</span></li>
+      <li><span>∠BCA = ∠DAC</span><span class="rs">CPCT</span></li>
+      <li><span>BC ∥ AD</span><span class="rs">Alternate angles are equal (transversal AC)</span></li>
+      <li><span class="end">∴ AB ∥ CD and BC ∥ AD, so ABCD is a parallelogram</span><span class="rs">Definition</span></li>
+    </ol>
+    <figure class="sim" id="s88">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>AB and DC are equal and parallel (arrows and ticks). The two alternate angle pairs along AC come out equal, which forces BC ∥ AD.</figcaption>
+    </figure>
+  </article>
+
+  <article class="ex" id="ex6">
+    <header><span class="tag">Example 6</span><h3>ABCD is a parallelogram. P and Q are the mid-points of AB and CD. AQ meets DP at S and BQ meets CP at R. Show that (i) APCQ is a parallelogram, (ii) DPBQ is a parallelogram, (iii) PSQR is a parallelogram.</h3></header>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>(i) AP ∥ QC</span><span class="rs">AB ∥ CD</span></li>
+      <li><span>AP = ½AB, CQ = ½CD and AB = CD, so AP = QC</span><span class="rs">Mid-points; opposite sides of a parallelogram</span></li>
+      <li><span>∴ APCQ is a parallelogram</span><span class="rs">Theorem 8.8</span></li>
+      <li><span>(ii) DQ ∥ PB and DQ = PB, so DPBQ is a parallelogram</span><span class="rs">Same argument, Theorem 8.8</span></li>
+      <li><span>(iii) SP ∥ QR</span><span class="rs">SP is part of DP, QR is part of QB, and DP ∥ QB by (ii)</span></li>
+      <li><span>SQ ∥ PR</span><span class="rs">SQ is part of AQ, PR is part of PC, and AQ ∥ PC by (i)</span></li>
+      <li><span class="end">∴ PSQR is a parallelogram</span><span class="rs">Both pairs of opposite sides are parallel</span></li>
+    </ol>
+    <figure class="sim" id="sEx6">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Drag A, B or D. The shaded PSQR keeps both pairs of opposite sides equal.</figcaption>
+    </figure>
+  </article>
+
+  <article class="thm" id="tester">
+    <header><span class="tag">Try it · converse tester</span><h3>Five ways to know a quadrilateral is a parallelogram</h3></header>
+    <div class="facts">
+      <div class="fact"><h3>Definition</h3><p>Both pairs of opposite sides are parallel.</p></div>
+      <div class="fact"><h3>Theorem 8.3</h3><p>Both pairs of opposite sides are equal.</p></div>
+      <div class="fact"><h3>Theorem 8.5</h3><p>Both pairs of opposite angles are equal.</p></div>
+      <div class="fact"><h3>Theorem 8.7</h3><p>The diagonals bisect each other.</p></div>
+      <div class="fact"><h3>Theorem 8.8</h3><p>One pair of opposite sides is equal and parallel.</p></div>
+    </div>
+    <p>Drag the four corners of a free quadrilateral. Try to turn any one test green while the last chip, <b>Parallelogram</b>, stays red. A real four-sided figure never allows it. Tests use a tolerance of under a pixel, so line up carefully or press the snap button.</p>
+    <figure class="sim" id="sTester">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>If the sides cross over each other, the figure is not a quadrilateral and the tests are switched off.</figcaption>
+    </figure>
+  </article>
+</section>
+
+<section class="sec" id="midpoint">
+  <div class="sec-h"><span class="num">8.6</span><h2>The mid-point theorem</h2></div>
+  <p class="lead">Measure the segment joining the mid-points of two sides of a triangle. It is parallel to the third side and exactly half as long. Drag the triangle and check.</p>
+
+  <article class="thm" id="t89">
+    <header><span class="tag">Theorem 8.9</span><h3>The line segment joining the mid-points of two sides of a triangle is parallel to the third side, and is half of it.</h3></header>
+    <div class="gp"><div><b>Given</b>ΔABC, with E the mid-point of AB and F the mid-point of AC.</div><div><b>To prove</b>EF ∥ BC and EF = ½BC</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>Produce EF to D so that FD = EF. Join CD.</span><span class="rs">Construction</span></li>
+      <li><span>In ΔAEF and ΔCDF: AF = CF</span><span class="rs">F is the mid-point of AC</span></li>
+      <li><span>∠AFE = ∠CFD</span><span class="rs">Vertically opposite angles</span></li>
+      <li><span>EF = DF</span><span class="rs">Construction</span></li>
+      <li><span>ΔAEF ≅ ΔCDF</span><span class="rs">SAS congruence rule</span></li>
+      <li><span>AE = CD and ∠AEF = ∠CDF</span><span class="rs">CPCT</span></li>
+      <li><span>AE ∥ DC</span><span class="rs">Alternate angles ∠AEF, ∠CDF are equal (transversal ED)</span></li>
+      <li><span>BE = AE = DC, and BE ∥ DC</span><span class="rs">E is the mid-point of AB; steps 6 and 7</span></li>
+      <li><span>BCDE is a parallelogram</span><span class="rs">A pair of opposite sides is equal and parallel (Theorem 8.8)</span></li>
+      <li><span>ED ∥ BC and ED = BC</span><span class="rs">Opposite sides of a parallelogram</span></li>
+      <li><span class="end">∴ EF ∥ BC and EF = ½ED = ½BC</span><span class="rs">F is the mid-point of ED</span></li>
+    </ol>
+    <figure class="sim" id="sMid">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Drag A, B or C. Tick the box to see the construction used in the proof: EF extended to D, with BCDE a parallelogram.</figcaption>
+    </figure>
+  </article>
+
+  <article class="thm" id="t810">
+    <header><span class="tag">Theorem 8.10 · converse of 8.9</span><h3>The line drawn through the mid-point of one side of a triangle, parallel to another side, bisects the third side.</h3></header>
+    <div class="gp"><div><b>Given</b>ΔABC, E the mid-point of AB, and a line l through E with l ∥ BC, meeting AC at F.</div><div><b>To prove</b>AF = CF</div></div>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>Draw CM ∥ BA, meeting l at D.</span><span class="rs">Construction</span></li>
+      <li><span>EB ∥ DC and ED ∥ BC</span><span class="rs">BA ∥ CM, and l ∥ BC (Given)</span></li>
+      <li><span>BCDE is a parallelogram</span><span class="rs">Both pairs of opposite sides are parallel</span></li>
+      <li><span>DC = EB = AE</span><span class="rs">Opposite sides; E is the mid-point of AB</span></li>
+      <li><span>In ΔAEF and ΔCDF: ∠AEF = ∠CDF</span><span class="rs">AB ∥ CM, transversal ED, alternate angles</span></li>
+      <li><span>∠AFE = ∠CFD</span><span class="rs">Vertically opposite angles</span></li>
+      <li><span>AE = CD</span><span class="rs">Step 4</span></li>
+      <li><span>ΔAEF ≅ ΔCDF</span><span class="rs">AAS congruence rule</span></li>
+      <li><span class="end">∴ AF = CF</span><span class="rs">CPCT</span></li>
+    </ol>
+    <figure class="sim" id="sT810">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Slide E along AB. The parallel through E cuts AC in the same ratio. Only at the mid-point does it bisect AC.</figcaption>
+    </figure>
+  </article>
+
+  <article class="ex" id="ex7">
+    <header><span class="tag">Example 7</span><h3>In ΔABC, D, E and F are the mid-points of AB, BC and CA. Show that joining D, E and F divides ΔABC into four congruent triangles.</h3></header>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>DE ∥ AC, DF ∥ BC and EF ∥ AB</span><span class="rs">Mid-point theorem (Theorem 8.9)</span></li>
+      <li><span>ADEF, BDFE and DFCE are parallelograms</span><span class="rs">Both pairs of opposite sides are parallel</span></li>
+      <li><span>DE is a diagonal of BDFE, so ΔBDE ≅ ΔFED</span><span class="rs">Theorem 8.1</span></li>
+      <li><span>Similarly ΔDAF ≅ ΔFED (diagonal DF of ADEF) and ΔEFC ≅ ΔFED (diagonal EF of DFCE)</span><span class="rs">Theorem 8.1</span></li>
+      <li><span class="end">∴ All four triangles are congruent</span><span class="rs"></span></li>
+    </ol>
+    <figure class="sim" id="sEx7">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Drag A, B or C. The four triangles always have the same area, one quarter of the whole.</figcaption>
+    </figure>
+  </article>
+
+  <article class="ex" id="ex8">
+    <header><span class="tag">Example 8</span><h3>l, m and n are three parallel lines cut by transversals p and q. If l, m and n cut off equal intercepts AB and BC on p, show that they cut off equal intercepts DE and EF on q.</h3></header>
+    <div class="proof-h"><span></span><span>Statement</span><span>Reason</span></div>
+    <ol class="proof">
+      <li><span>Join A to F, meeting m at G.</span><span class="rs">Construction</span></li>
+      <li><span>In ΔACF, B is the mid-point of AC</span><span class="rs">AB = BC (Given)</span></li>
+      <li><span>BG ∥ CF</span><span class="rs">m ∥ n</span></li>
+      <li><span>G is the mid-point of AF</span><span class="rs">Theorem 8.10</span></li>
+      <li><span>In ΔAFD, G is the mid-point of AF and GE ∥ AD</span><span class="rs">Step 4; m ∥ l</span></li>
+      <li><span>E is the mid-point of DF</span><span class="rs">Theorem 8.10</span></li>
+      <li><span class="end">∴ DE = EF</span><span class="rs">So l, m and n cut equal intercepts on q too</span></li>
+    </ol>
+    <figure class="sim" id="sEx8">
+      <div class="stage"></div><div class="controls"></div><div class="readout"></div>
+      <figcaption>Tilt either transversal. With equal gaps between the lines, both intercept pairs stay equal. Move line n and the two ratios change together.</figcaption>
+    </figure>
+  </article>
+</section>
+
+<section class="sec" id="quiz">
+  <div class="sec-h"><span class="num">Quiz</span><h2>Check your understanding</h2></div>
+  <p class="lead">Ten questions drawn from the chapter. Pick an answer to see the reason straight away.</p>
+  <div id="quizMount"></div>
+</section>
+
+</main>
+</div>
+
+<footer class="foot"><div class="in">dxshonly</div></footer>
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg', U=30;
+function $(s,r){return (r||document).querySelector(s)}
+var V={
+  sub:function(a,b){return [a[0]-b[0],a[1]-b[1]]},
+  add:function(a,b){return [a[0]+b[0],a[1]+b[1]]},
+  mul:function(a,k){return [a[0]*k,a[1]*k]},
+  dot:function(a,b){return a[0]*b[0]+a[1]*b[1]},
+  cross:function(a,b){return a[0]*b[1]-a[1]*b[0]},
+  len:function(a){return Math.hypot(a[0],a[1])},
+  dist:function(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1])},
+  mid:function(a,b){return [(a[0]+b[0])/2,(a[1]+b[1])/2]},
+  lerp:function(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]},
+  unit:function(a){var l=Math.hypot(a[0],a[1])||1;return [a[0]/l,a[1]/l]},
+  angle:function(a,v,b){var p=V.sub(a,v),q=V.sub(b,v);var c=V.dot(p,q)/((V.len(p)*V.len(q))||1);return Math.acos(Math.max(-1,Math.min(1,c)))*180/Math.PI}
+};
+function inter(p1,p2,p3,p4){
+  var d1=V.sub(p2,p1),d2=V.sub(p4,p3),den=V.cross(d1,d2);
+  if(Math.abs(den)<1e-9)return null;
+  var t=V.cross(V.sub(p3,p1),d2)/den;return V.add(p1,V.mul(d1,t));
+}
+function fmt(n,d){return n.toFixed(d==null?1:d)}
+function cm(px){return fmt(px/U,1)+' cm'}
+function deg(x){return fmt(x,1)+'°'}
+function eq(a,b,t){return Math.abs(a-b)<=(t==null?0.6:t)}
+function par(a,b,c,d,t){var u=V.unit(V.sub(b,a)),w=V.unit(V.sub(d,c));return Math.abs(V.cross(u,w))<(t==null?0.015:t)}
+function area(P){var s=0,n=P.length;for(var i=0;i<n;i++)s+=V.cross(P[i],P[(i+1)%n]);return s/2}
+function cen(P){var x=0,y=0;P.forEach(function(p){x+=p[0];y+=p[1]});return [x/P.length,y/P.length]}
+function segInt(p1,p2,p3,p4){
+  var d1=V.cross(V.sub(p4,p3),V.sub(p1,p3)),d2=V.cross(V.sub(p4,p3),V.sub(p2,p3));
+  var d3=V.cross(V.sub(p2,p1),V.sub(p3,p1)),d4=V.cross(V.sub(p2,p1),V.sub(p4,p1));
+  return d1*d2<0&&d3*d4<0;
+}
+function interior(P){
+  var s=area(P)>=0?1:-1,out=[];
+  for(var i=0;i<4;i++){
+    var v=P[i],pr=V.sub(P[(i+3)%4],v),nx=V.sub(P[(i+1)%4],v);
+    var th=Math.atan2(s*V.cross(nx,pr),V.dot(nx,pr));if(th<0)th+=2*Math.PI;
+    out.push(th*180/Math.PI);
+  }
+  return out;
+}
+function mk(tag,attrs,parent){
+  var e=document.createElementNS(NS,tag);
+  for(var k in attrs)e.setAttribute(k,attrs[k]);
+  if(parent)parent.appendChild(e);return e;
+}
+function pstr(ps){return ps.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1)}).join(' ')}
+
+function layerApi(g){
+  var L={
+    clear:function(){g.textContent=''},
+    line:function(a,b,c){return mk('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:c||'ln'},g)},
+    poly:function(ps,c){return mk('polygon',{points:pstr(ps),class:c||'edge'},g)},
+    text:function(p,t,c){var e=mk('text',{x:p[0],y:p[1],class:c||'lbl'},g);e.textContent=t;return e},
+    dot:function(p,r,c){return mk('circle',{cx:p[0],cy:p[1],r:r||3.6,class:c||'pt'},g)},
+    vlabel:function(p,t,ctr,d){var u=V.unit(V.sub(p,ctr)),k=d||20;return L.text([p[0]+u[0]*k,p[1]+u[1]*k],t,'vl')},
+    tick:function(a,b,n){
+      var m=V.mid(a,b),d=V.unit(V.sub(b,a)),nr=[-d[1],d[0]];
+      for(var i=0;i<n;i++){
+        var o=(i-(n-1)/2)*5,c=[m[0]+d[0]*o,m[1]+d[1]*o];
+        L.line([c[0]-nr[0]*6,c[1]-nr[1]*6],[c[0]+nr[0]*6,c[1]+nr[1]*6],'tk');
+      }
+    },
+    chev:function(a,b){
+      var m=V.mid(a,b),d=V.unit(V.sub(b,a)),nr=[-d[1],d[0]];
+      var p1=[m[0]-d[0]*7+nr[0]*6,m[1]-d[1]*7+nr[1]*6],p2=[m[0]+d[0]*2,m[1]+d[1]*2],p3=[m[0]-d[0]*7-nr[0]*6,m[1]-d[1]*7-nr[1]*6];
+      mk('polyline',{points:pstr([p1,p2,p3]),class:'tk'},g);
+    },
+    arc:function(v,a,b,r,c){
+      var t1=Math.atan2(a[1]-v[1],a[0]-v[0]),t2=Math.atan2(b[1]-v[1],b[0]-v[0]),d=t2-t1;
+      while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+      var p1=[v[0]+r*Math.cos(t1),v[1]+r*Math.sin(t1)],p2=[v[0]+r*Math.cos(t2),v[1]+r*Math.sin(t2)];
+      return mk('path',{d:'M'+p1[0].toFixed(1)+' '+p1[1].toFixed(1)+' A'+r+' '+r+' 0 0 '+(d>0?1:0)+' '+p2[0].toFixed(1)+' '+p2[1].toFixed(1),class:c||'arc'},g);
+    },
+    arcs:function(v,a,b,r,n){for(var i=0;i<n;i++)L.arc(v,a,b,r+i*5)},
+    right:function(v,a,b,s){
+      s=s||11;var u=V.unit(V.sub(a,v)),w=V.unit(V.sub(b,v));
+      var p1=V.add(v,V.mul(u,s)),p3=V.add(v,V.mul(w,s)),p2=V.add(p1,V.mul(w,s));
+      mk('polyline',{points:pstr([p1,p2,p3]),class:'rt'},g);
+    },
+    inward:function(v,a,b,d,t,c){
+      var s=V.unit(V.add(V.unit(V.sub(a,v)),V.unit(V.sub(b,v))));
+      return L.text([v[0]+s[0]*d,v[1]+s[1]*d],t,c||'lblh');
+    }
+  };
+  return L;
+}
+
+function chip(it){
+  if(!it)return '';
+  if(typeof it==='string')return '<div class="msg">'+it+'</div>';
+  return '<div class="chip '+(it.s||'')+'"><span>'+it.k+'</span><b>'+it.v+'</b></div>';
+}
+
+function sim(id,cfg){
+  var root=document.getElementById(id);if(!root)return null;
+  var stage=$('.stage',root),out=$('.readout',root),ctl=$('.controls',root);
+  var W=cfg.w||600,H=cfg.h||400;
+  var svg=mk('svg',{viewBox:'0 0 '+W+' '+H,role:'img','aria-label':cfg.label||'Interactive figure'});
+  var defs=mk('defs',{},svg),pat=mk('pattern',{id:id+'-grid',width:U,height:U,patternUnits:'userSpaceOnUse'},defs);
+  mk('path',{d:'M'+U+' 0H0V'+U,class:'gridp'},pat);
+  mk('rect',{width:W,height:H,style:'fill:var(--surface)'},svg);
+  mk('rect',{width:W,height:H,fill:'url(#'+id+'-grid)'},svg);
+  var layer=mk('g',{},svg),hg=mk('g',{},svg),L=layerApi(layer);
+  stage.appendChild(svg);
+  var st={pts:(cfg.pts||[]).map(function(p){return p.slice()})};
+  if(cfg.state)for(var k in cfg.state)st[k]=cfg.state[k];
+  var names=cfg.names||[];
+  var drag=cfg.drag||st.pts.map(function(_,i){return i});
+  if(cfg.fix)cfg.fix(st.pts,-1);
+  var api={st:st,L:L};
+  function render(){
+    L.clear();cfg.draw(L,st,{W:W,H:H});
+    handles.forEach(function(h){h.el.setAttribute('cx',st.pts[h.i][0]);h.el.setAttribute('cy',st.pts[h.i][1])});
+    if(cfg.read&&out)out.innerHTML=cfg.read(st).map(chip).join('');
+  }
+  function moveTo(i,x,y){
+    var old=st.pts.map(function(p){return p.slice()});
+    st.pts[i]=[Math.max(18,Math.min(W-18,x)),Math.max(18,Math.min(H-18,y))];
+    if(cfg.fix)cfg.fix(st.pts,i);
+    if(cfg.valid&&!cfg.valid(st.pts,st))st.pts=old;
+    render();
+  }
+  var handles=drag.map(function(i){
+    var c=mk('circle',{r:11,class:'handle',tabindex:0,role:'slider','aria-label':'Move vertex '+(names[i]||(i+1))+' with the mouse, touch or arrow keys'},hg),act=false;
+    c.addEventListener('pointerdown',function(e){act=true;try{c.setPointerCapture(e.pointerId)}catch(x){}e.preventDefault()});
+    c.addEventListener('pointermove',function(e){
+      if(!act)return;var r=svg.getBoundingClientRect();
+      moveTo(i,(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);
+    });
+    var end=function(){act=false};
+    c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end);
+    c.addEventListener('keydown',function(e){
+      var s=e.shiftKey?12:4,dx=0,dy=0;
+      if(e.key==='ArrowLeft')dx=-s;else if(e.key==='ArrowRight')dx=s;else if(e.key==='ArrowUp')dy=-s;else if(e.key==='ArrowDown')dy=s;else return;
+      e.preventDefault();moveTo(i,st.pts[i][0]+dx,st.pts[i][1]+dy);
+    });
+    return {i:i,el:c};
+  });
+  api.render=render;
+  api.reset=function(pts){st.pts=pts.map(function(p){return p.slice()});if(cfg.fix)cfg.fix(st.pts,-1);render()};
+  if(cfg.controls)cfg.controls(ctl,st,render,api);
+  render();
+  return api;
+}
+
+function slider(ctl,id,label,min,max,step,val,unit,onch){
+  var lab=document.createElement('label');
+  lab.innerHTML=label+' <input type="range" id="'+id+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'"> <output for="'+id+'"></output>';
+  var inp=lab.querySelector('input'),o=lab.querySelector('output');
+  var dp=step<0.1?2:(step<1?1:0);
+  function upd(){o.textContent=(+inp.value).toFixed(dp)+(unit||'')}
+  inp.addEventListener('input',function(){upd();onch(+inp.value)});
+  upd();ctl.appendChild(lab);return inp;
+}
+function button(ctl,id,text,fn){
+  var b=document.createElement('button');b.type='button';b.id=id;b.textContent=text;
+  b.addEventListener('click',fn);ctl.appendChild(b);return b;
+}
+function checkbox(ctl,id,text,val,fn){
+  var lab=document.createElement('label');
+  lab.innerHTML='<input type="checkbox" id="'+id+'"'+(val?' checked':'')+'> '+text;
+  lab.querySelector('input').addEventListener('change',function(e){fn(e.target.checked)});
+  ctl.appendChild(lab);
+}
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Parallelogram figures (A, B, D draggable; C follows) ---------- */
+function paraValid(p){
+  for(var i=0;i<4;i++)if(p[i][0]<16||p[i][0]>584||p[i][1]<16||p[i][1]>384)return false;
+  if(Math.abs(area(p))<1800)return false;
+  var a=V.angle(p[3],p[0],p[1]);return a>20&&a<160;
+}
+function paraFix(p){p[2]=[p[1][0]+p[3][0]-p[0][0],p[1][1]+p[3][1]-p[0][1]]}
+function rotAbout(p,o,t){var c=Math.cos(t),s=Math.sin(t),d=V.sub(p,o);return [o[0]+d[0]*c-d[1]*s,o[1]+d[0]*s+d[1]*c]}
+
+function paraSim(id,mode){
+  var c={
+    label:'Parallelogram ABCD. Drag vertices A, B or D; C follows.',
+    names:['A','B','C','D'],
+    pts:[[130,310],[400,310],[480,100],[210,100]],
+    drag:[0,1,3],fix:paraFix,valid:paraValid,
+    state:{t:0,show:true},
+    draw:function(L,st){
+      var P=st.pts,A=P[0],B=P[1],C=P[2],D=P[3],ctr=cen(P),O=V.mid(A,C);
+      L.poly(P,'fill');
+      if(mode==='rot'){
+        L.line(A,C,'dash');
+        var t=st.t*Math.PI/180;
+        L.poly([rotAbout(A,O,t),rotAbout(B,O,t),rotAbout(C,O,t)],'c2');
+        L.poly([C,D,A],'thin');
+      }
+      if(mode==='sides'){
+        L.line(A,C,'dash');
+      }
+      if(mode==='diag'){L.line(A,C,'ln');L.line(B,D,'ln')}
+      if(mode==='sas'||mode==='sides'||mode==='rot'||mode==='diag'||mode==='angles')L.poly(P,'edge');
+      if(mode==='sas'){
+        L.line(A,C,'dash');
+        L.tick(A,B,1);L.tick(D,C,1);L.chev(A,B);L.chev(D,C);
+        L.arcs(A,B,C,26,1);L.arcs(C,D,A,26,1);L.arcs(C,B,A,26,2);L.arcs(A,D,C,26,2);
+      }
+      if(mode==='sides'){
+        L.tick(A,B,1);L.tick(D,C,1);L.tick(B,C,2);L.tick(A,D,2);
+        [[A,B],[B,C],[C,D],[D,A]].forEach(function(s){
+          var m=V.mid(s[0],s[1]),u=V.unit(V.sub(m,ctr));
+          L.text([m[0]+u[0]*22,m[1]+u[1]*22],cm(V.dist(s[0],s[1])),'lblh');
+        });
+      }
+      if(mode==='angles'){
+        for(var i=0;i<4;i++){
+          var v=P[i],pr=P[(i+3)%4],nx=P[(i+1)%4];
+          L.arcs(v,pr,nx,22,(i%2===0)?1:2);
+          L.inward(v,pr,nx,50,deg(V.angle(pr,v,nx)));
+        }
+      }
+      if(mode==='diag'){
+        L.tick(A,O,1);L.tick(O,C,1);L.tick(B,O,2);L.tick(O,D,2);L.dot(O,4.5);L.text([O[0]+4,O[1]+17],'O','vl');
+      }
+      if(mode==='rot'){L.dot(O,4.5);L.text([O[0]+4,O[1]+17],'O','vl')}
+      if(mode==='ex5'){
+        var bis=function(v,a,b){return V.add(v,V.unit(V.add(V.unit(V.sub(a,v)),V.unit(V.sub(b,v)))))};
+        var dA=bis(A,D,B),dB=bis(B,A,C),dC=bis(C,B,D),dD=bis(D,C,A);
+        var Pp=inter(A,dA,B,dB),Q=inter(B,dB,C,dC),R=inter(C,dC,D,dD),S=inter(D,dD,A,dA);
+        L.poly(P,'edge');
+        if(Pp&&Q&&R&&S){
+          var far=function(v,x,y){return V.dist(v,x)>V.dist(v,y)?x:y};
+          L.line(A,far(A,Pp,S),'dash');L.line(B,far(B,Pp,Q),'dash');L.line(C,far(C,Q,R),'dash');L.line(D,far(D,R,S),'dash');
+          L.poly([Pp,Q,R,S],'hlf');
+          st.PQRS=[Pp,Q,R,S];
+          var big=V.dist(Pp,R)>26;
+          if(big){
+            [[Pp,S,Q],[Q,Pp,R],[R,Q,S],[S,R,Pp]].forEach(function(t){L.right(t[0],t[1],t[2],9)});
+            var c2=cen([Pp,Q,R,S]);
+            [['P',Pp],['Q',Q],['R',R],['S',S]].forEach(function(n){L.vlabel(n[1],n[0],c2,16)});
+          }
+        }else st.PQRS=null;
+      }
+      if(mode==='ex6'){
+        var Pm=V.mid(A,B),Qm=V.mid(C,D),S2=inter(A,Qm,D,Pm),R2=inter(B,Qm,C,Pm);
+        L.poly(P,'edge');
+        L.line(A,Qm,'dash');L.line(D,Pm,'dash');L.line(B,Qm,'dash');L.line(C,Pm,'dash');
+        L.poly([Pm,S2,Qm,R2],'hlf');
+        L.tick(Pm,S2,1);L.tick(Qm,R2,1);L.tick(S2,Qm,2);L.tick(R2,Pm,2);
+        var c3=cen([Pm,S2,Qm,R2]);
+        L.vlabel(Pm,'P',ctr,20);L.vlabel(Qm,'Q',ctr,20);L.vlabel(S2,'S',c3,17);L.vlabel(R2,'R',c3,17);
+        st.X={P:Pm,Q:Qm,S:S2,R:R2};
+      }
+      ['A','B','C','D'].forEach(function(n,i){L.vlabel(P[i],n,ctr,22)});
+    },
+    read:function(st){
+      var P=st.pts,A=P[0],B=P[1],C=P[2],D=P[3],O=V.mid(A,C),d=V.dist;
+      if(mode==='rot'){
+        return [
+          {k:'AB',v:cm(d(A,B)),s:'ok'},{k:'DC',v:cm(d(D,C)),s:'ok'},{k:'BC',v:cm(d(B,C)),s:'ok'},{k:'AD',v:cm(d(A,D)),s:'ok'},
+          {k:'∠BAC',v:deg(V.angle(B,A,C)),s:'ok'},{k:'∠DCA',v:deg(V.angle(D,C,A)),s:'ok'},
+          {k:'∠BCA',v:deg(V.angle(B,C,A)),s:'ok'},{k:'∠DAC',v:deg(V.angle(D,A,C)),s:'ok'},
+          {k:'Turn so far',v:fmt(st.t,0)+'°',s:st.t>=179.5?'ok':''}
+        ];
+      }
+      if(mode==='sides')return [{k:'AB',v:cm(d(A,B)),s:'ok'},{k:'DC',v:cm(d(D,C)),s:'ok'},{k:'BC',v:cm(d(B,C)),s:'ok'},{k:'AD',v:cm(d(A,D)),s:'ok'}];
+      if(mode==='angles'){
+        var a=P.map(function(p,i){return V.angle(P[(i+3)%4],p,P[(i+1)%4])});
+        return [{k:'∠A',v:deg(a[0]),s:'ok'},{k:'∠C',v:deg(a[2]),s:'ok'},{k:'∠B',v:deg(a[1])},{k:'∠D',v:deg(a[3])},{k:'∠A + ∠B',v:deg(a[0]+a[1]),s:'ok'},{k:'Sum of all four',v:deg(a[0]+a[1]+a[2]+a[3]),s:'ok'}];
+      }
+      if(mode==='diag'){
+        return [{k:'OA',v:cm(d(O,A)),s:'ok'},{k:'OC',v:cm(d(O,C)),s:'ok'},{k:'OB',v:cm(d(O,B)),s:'ok'},{k:'OD',v:cm(d(O,D)),s:'ok'},{k:'AC',v:cm(d(A,C))},{k:'BD',v:cm(d(B,D))}];
+      }
+      if(mode==='sas'){
+        return [{k:'AB',v:cm(d(A,B)),s:'ok'},{k:'DC',v:cm(d(D,C)),s:'ok'},
+          {k:'∠BAC',v:deg(V.angle(B,A,C)),s:'ok'},{k:'∠DCA',v:deg(V.angle(D,C,A)),s:'ok'},
+          {k:'∠BCA',v:deg(V.angle(B,C,A)),s:'ok'},{k:'∠DAC',v:deg(V.angle(D,A,C)),s:'ok'},
+          {k:'BC ∥ AD',v:par(B,C,A,D,0.01)?'yes':'no',s:par(B,C,A,D,0.01)?'ok':'no'}];
+      }
+      if(mode==='ex5'){
+        var q=st.PQRS;
+        if(!q)return ['The bisectors do not meet. Reshape the figure.'];
+        if(V.dist(q[0],q[2])<=26)return [{k:'PQRS',v:'a point',s:'ok'},'AB = AD here, so ABCD is a rhombus and the four bisectors meet at one point, the centre.'];
+        var an=function(i){return V.angle(q[(i+3)%4],q[i],q[(i+1)%4])};
+        return [{k:'∠SPQ',v:deg(an(0)),s:eq(an(0),90,0.5)?'ok':'no'},{k:'∠PQR',v:deg(an(1)),s:eq(an(1),90,0.5)?'ok':'no'},{k:'∠QRS',v:deg(an(2)),s:eq(an(2),90,0.5)?'ok':'no'},{k:'∠RSP',v:deg(an(3)),s:eq(an(3),90,0.5)?'ok':'no'},{k:'PR',v:cm(d(q[0],q[2]))},{k:'QS',v:cm(d(q[1],q[3]))}];
+      }
+      if(mode==='ex6'){
+        var X=st.X;
+        return [{k:'PS',v:cm(d(X.P,X.S)),s:'ok'},{k:'QR',v:cm(d(X.Q,X.R)),s:'ok'},{k:'SQ',v:cm(d(X.S,X.Q)),s:'ok'},{k:'RP',v:cm(d(X.R,X.P)),s:'ok'},
+          {k:'PS ∥ RQ',v:par(X.P,X.S,X.R,X.Q,0.01)?'yes':'no',s:par(X.P,X.S,X.R,X.Q,0.01)?'ok':'no'},{k:'SQ ∥ PR',v:par(X.S,X.Q,X.P,X.R,0.01)?'yes':'no',s:par(X.S,X.Q,X.P,X.R,0.01)?'ok':'no'}];
+      }
+      return [];
+    }
+  };
+  if(mode==='rot'){
+    c.controls=function(ctl,st,render){
+      var sl=slider(ctl,id+'-turn','Turn ΔABC about O',0,180,1,0,'°',function(v){st.t=v;render()});
+      button(ctl,id+'-play','Play',function(){
+        if(reduce){sl.value=180;sl.dispatchEvent(new Event('input'));return}
+        var t0=null;
+        (function step(ts){
+          if(t0===null)t0=ts;var k=Math.min(1,(ts-t0)/2400);
+          sl.value=k*180;sl.dispatchEvent(new Event('input'));
+          if(k<1)requestAnimationFrame(step);
+        })(performance.now());
+      });
+      button(ctl,id+'-back','Reset',function(){sl.value=0;sl.dispatchEvent(new Event('input'))});
+    };
+  }
+  return sim(id,c);
+}
+
+window.__q={V:V,inter:inter,fmt:fmt,cm:cm,deg:deg,eq:eq,par:par,area:area,cen:cen,segInt:segInt,interior:interior,mk:mk,sim:sim,slider:slider,button:button,checkbox:checkbox,paraSim:paraSim,U:U,reduce:reduce,paraFix:paraFix,paraValid:paraValid};
+
+paraSim('s81','rot');
+paraSim('s82','sides');
+paraSim('s84','angles');
+paraSim('s86','diag');
+paraSim('s88','sas');
+paraSim('sEx5','ex5');
+paraSim('sEx6','ex6');
+})();
+(function(){
+'use strict';
+var Q=window.__q,V=Q.V,fmt=Q.fmt,cm=Q.cm,deg=Q.deg,eq=Q.eq,par=Q.par,area=Q.area,cen=Q.cen,sim=Q.sim,slider=Q.slider,button=Q.button,checkbox=Q.checkbox,U=Q.U;
+
+/* ---------- Shape explorer (types of quadrilaterals) ---------- */
+var TYPES={
+  parallelogram:{name:'Parallelogram',params:[['w','Base AB',120,300,5,240,' px'],['s','Side AD',80,200,5,140,' px'],['a','Angle A',40,140,1,65,'°']],
+    build:function(q){var r=q.a*Math.PI/180,D=[q.s*Math.cos(r),-q.s*Math.sin(r)];return [[0,0],[q.w,0],[q.w+D[0],D[1]],D]}},
+  rectangle:{name:'Rectangle',params:[['w','Length',120,360,5,260,' px'],['h','Width',80,220,5,150,' px']],
+    build:function(q){return [[0,0],[q.w,0],[q.w,-q.h],[0,-q.h]]}},
+  square:{name:'Square',params:[['s','Side',80,220,5,160,' px']],
+    build:function(q){return [[0,0],[q.s,0],[q.s,-q.s],[0,-q.s]]}},
+  rhombus:{name:'Rhombus',params:[['s','Side',90,200,5,150,' px'],['a','Angle A',40,140,1,60,'°']],
+    build:function(q){var r=q.a*Math.PI/180,D=[q.s*Math.cos(r),-q.s*Math.sin(r)];return [[0,0],[q.s,0],[q.s+D[0],D[1]],D]}},
+  kite:{name:'Kite',params:[['p','Upper half',50,160,5,120,' px'],['q','Lower half',40,150,5,70,' px'],['r','Half width',50,170,5,100,' px']],
+    build:function(q){return [[0,-q.p],[q.r,0],[0,q.q],[-q.r,0]]}},
+  trapezium:{name:'Trapezium',params:[['w','Bottom base',180,360,5,320,' px'],['t','Top base',80,280,5,170,' px'],['h','Height',80,220,5,150,' px'],['o','Shift',-60,120,5,50,' px']],
+    build:function(q){return [[0,0],[q.w,0],[q.o+q.t,-q.h],[q.o,-q.h]]}}
+};
+function defaults(type){var q={};TYPES[type].params.forEach(function(p){q[p[0]]=p[5]});return q}
+function place(P){
+  var xs=P.map(function(p){return p[0]}),ys=P.map(function(p){return p[1]});
+  var cx=(Math.min.apply(null,xs)+Math.max.apply(null,xs))/2,cy=(Math.min.apply(null,ys)+Math.max.apply(null,ys))/2;
+  return P.map(function(p){return [p[0]-cx+300,p[1]-cy+200]});
+}
+function analyse(P){
+  var s=[0,1,2,3].map(function(i){return V.dist(P[i],P[(i+1)%4])});
+  var a=P.map(function(p,i){return V.angle(P[(i+3)%4],p,P[(i+1)%4])});
+  var p1=par(P[0],P[1],P[3],P[2],0.004),p2=par(P[1],P[2],P[0],P[3],0.004);
+  var right=a.every(function(x){return eq(x,90,0.05)});
+  var eq4=eq(s[0],s[1],0.05)&&eq(s[1],s[2],0.05)&&eq(s[2],s[3],0.05);
+  var kite=(eq(s[3],s[0],0.05)&&eq(s[1],s[2],0.05))||(eq(s[0],s[1],0.05)&&eq(s[2],s[3],0.05));
+  var name='Quadrilateral';
+  if(p1&&p2)name=eq4&&right?'Square':right?'Rectangle':eq4?'Rhombus':'Parallelogram';
+  else if(p1||p2)name='Trapezium';
+  else if(kite&&!eq4)name='Kite';
+  var dAC=V.dist(P[0],P[2]),dBD=V.dist(P[1],P[3]);
+  var perp=Math.abs(V.dot(V.unit(V.sub(P[2],P[0])),V.unit(V.sub(P[3],P[1]))))<0.004;
+  var bis=V.dist(V.mid(P[0],P[2]),V.mid(P[1],P[3]))<0.05;
+  var O=Q.inter(P[0],P[2],P[1],P[3]);
+  return {s:s,a:a,name:name,p1:p1,p2:p2,right:right,eq4:eq4,dAC:dAC,dBD:dBD,perp:perp,bis:bis,eqd:eq(dAC,dBD,0.05),O:O,
+    cross:O?V.angle(P[0],O,P[1]):null};
+}
+function explorer(id,types){
+  var api=sim(id,{
+    label:'Quadrilateral that you reshape with sliders',names:['A','B','C','D'],pts:[],drag:[],
+    state:{type:types[0],q:defaults(types[0]),P:null,info:null},
+    draw:function(L,st){
+      var P=place(TYPES[st.type].build(st.q)),info=analyse(P),ctr=cen(P);
+      st.P=P;st.info=info;
+      L.poly(P,'fill');
+      L.line(P[0],P[2],'dash');L.line(P[1],P[3],'dash');
+      L.poly(P,'edge');
+      var cls=[];
+      info.s.forEach(function(len,i){
+        var k=-1;for(var j=0;j<cls.length;j++)if(eq(cls[j].len,len,0.05)){k=j;break}
+        if(k<0){cls.push({len:len,ids:[i]});k=cls.length-1}else cls[k].ids.push(i);
+      });
+      cls.forEach(function(c,ci){if(c.ids.length>1)c.ids.forEach(function(i){L.tick(P[i],P[(i+1)%4],ci+1)})});
+      info.a.forEach(function(x,i){if(eq(x,90,0.05))L.right(P[i],P[(i+3)%4],P[(i+1)%4],11)});
+      if(info.O)L.dot(info.O,3.5);
+      ['A','B','C','D'].forEach(function(n,i){L.vlabel(P[i],n,ctr,22)});
+    },
+    read:function(st){
+      var i=st.info,n=function(x){return Math.abs(x-90)<0.05?'ok':''};
+      var out=[{k:'This is a',v:i.name,s:'big'}];
+      ['AB','BC','CD','DA'].forEach(function(nm,j){out.push({k:nm,v:cm(i.s[j])})});
+      ['A','B','C','D'].forEach(function(nm,j){out.push({k:'∠'+nm,v:deg(i.a[j]),s:n(i.a[j])})});
+      out.push({k:'AC',v:cm(i.dAC)},{k:'BD',v:cm(i.dBD)});
+      out.push({k:'Opposite sides parallel',v:(i.p1&&i.p2)?'both pairs':(i.p1||i.p2)?'one pair':'none',s:(i.p1&&i.p2)?'ok':''});
+      out.push({k:'Diagonals equal',v:i.eqd?'yes':'no',s:i.eqd?'ok':''});
+      out.push({k:'Diagonals bisect each other',v:i.bis?'yes':'no',s:i.bis?'ok':''});
+      out.push({k:'Angle between diagonals',v:i.cross==null?'-':deg(i.cross),s:(i.cross!=null&&Math.abs(i.cross-90)<0.05)?'ok':''});
+      return out;
+    },
+    controls:function(ctl,st,render){
+      function build(){
+        ctl.innerHTML='';
+        if(types.length>1){
+          var lab=document.createElement('label');
+          lab.innerHTML='Shape <select id="'+id+'-type"></select>';
+          var sel=lab.querySelector('select');
+          types.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=TYPES[t].name;if(t===st.type)o.selected=true;sel.appendChild(o)});
+          sel.addEventListener('change',function(){st.type=sel.value;st.q=defaults(st.type);build();render()});
+          ctl.appendChild(lab);
+        }
+        TYPES[st.type].params.forEach(function(p){
+          slider(ctl,id+'-'+p[0],p[1],p[2],p[3],p[4],st.q[p[0]],p[6],function(v){st.q[p[0]]=v;render()});
+        });
+      }
+      build();
+    }
+  });
+  return api;
+}
+explorer('sTypes',['parallelogram','rectangle','square','rhombus','kite','trapezium']);
+explorer('sEx1',['rectangle']);
+explorer('sEx2',['rhombus']);
+
+/* ---------- Free quadrilateral: angle sum ---------- */
+var START=[[120,300],[440,320],[510,120],[170,80]];
+function shuffled(){
+  var out=[];
+  for(var i=0;i<4;i++){
+    var t=(135-i*90+(Math.random()*60-30))*Math.PI/180;
+    out.push([300+Math.cos(t)*(190+Math.random()*50),200+Math.sin(t)*(120+Math.random()*50)]);
+  }
+  return out;
+}
+function crossed(P){return Q.segInt(P[0],P[1],P[2],P[3])||Q.segInt(P[1],P[2],P[3],P[0])}
+sim('sAngle',{
+  label:'Quadrilateral ABCD with four draggable vertices',names:['A','B','C','D'],pts:START,state:{diag:false},
+  draw:function(L,st){
+    var P=st.pts,ctr=cen(P);
+    if(crossed(P)){L.poly(P,'dash');['A','B','C','D'].forEach(function(n,i){L.vlabel(P[i],n,ctr,22)});return}
+    var ang=Q.interior(P);
+    L.poly(P,'fill');
+    if(st.diag){
+      var useBD=ang[0]>180||ang[2]>180;
+      L.line(useBD?P[1]:P[0],useBD?P[3]:P[2],'dash');
+    }
+    L.poly(P,'edge');
+    for(var i=0;i<4;i++){
+      var v=P[i],pr=P[(i+3)%4],nx=P[(i+1)%4];
+      if(ang[i]<180)L.arc(v,pr,nx,22);
+      var s=V.unit(V.add(V.unit(V.sub(pr,v)),V.unit(V.sub(nx,v))));
+      if(ang[i]>180)s=[-s[0],-s[1]];
+      L.text([v[0]+s[0]*48,v[1]+s[1]*48],deg(ang[i]),'lblh');
+    }
+    ['A','B','C','D'].forEach(function(n,i){L.vlabel(P[i],n,ctr,22)});
+  },
+  read:function(st){
+    var P=st.pts;
+    if(crossed(P))return ['The sides cross over each other, so this is not a quadrilateral. Drag a vertex back until the figure closes without crossing.'];
+    var a=Q.interior(P),sum=a[0]+a[1]+a[2]+a[3];
+    var out=[{k:'∠A',v:deg(a[0])},{k:'∠B',v:deg(a[1])},{k:'∠C',v:deg(a[2])},{k:'∠D',v:deg(a[3])},{k:'Sum',v:deg(sum),s:'ok'}];
+    if(st.diag){
+      var useBD=a[0]>180||a[2]>180,tri=function(x,y,z){return V.angle(y,x,z)+V.angle(x,y,z)+V.angle(x,z,y)};
+      out.push(useBD?{k:'ΔABD',v:deg(tri(P[0],P[1],P[3])),s:'ok'}:{k:'ΔABC',v:deg(tri(P[0],P[1],P[2])),s:'ok'});
+      out.push(useBD?{k:'ΔBCD',v:deg(tri(P[1],P[2],P[3])),s:'ok'}:{k:'ΔACD',v:deg(tri(P[0],P[2],P[3])),s:'ok'});
+    }
+    return out;
+  },
+  controls:function(ctl,st,render,api){
+    checkbox(ctl,'sAngle-diag','Show a diagonal',false,function(v){st.diag=v;render()});
+    button(ctl,'sAngle-shuffle','Shuffle',function(){api.reset(shuffled())});
+    button(ctl,'sAngle-reset','Reset',function(){api.reset(START)});
+  }
+});
+
+/* ---------- Converse tester ---------- */
+var T0=[[130,310],[420,330],[500,130],[200,70]];
+sim('sTester',{
+  label:'Free quadrilateral for testing the five parallelogram conditions',names:['A','B','C','D'],pts:T0,
+  draw:function(L,st){
+    var P=st.pts,A=P[0],B=P[1],C=P[2],D=P[3],ctr=cen(P);
+    var bad=crossed(P);
+    if(bad){L.poly(P,'dash')}
+    else{
+      var isP=par(A,B,D,C,0.04)&&par(B,C,A,D,0.04);
+      L.poly(P,isP?'okf':'fill');
+      L.line(A,C,'dash');L.line(B,D,'dash');
+      var O=V.mid(A,C);if(V.dist(O,V.mid(B,D))<1.2){L.dot(O,5)}
+      L.poly(P,'edge');
+      if(eq(V.dist(A,B),V.dist(D,C),0.8)){L.tick(A,B,1);L.tick(D,C,1)}
+      if(eq(V.dist(B,C),V.dist(A,D),0.8)){L.tick(B,C,2);L.tick(A,D,2)}
+    }
+    ['A','B','C','D'].forEach(function(n,i){L.vlabel(P[i],n,ctr,22)});
+  },
+  read:function(st){
+    var P=st.pts,A=P[0],B=P[1],C=P[2],D=P[3];
+    if(crossed(P))return ['The sides cross over each other, so this is not a quadrilateral and the tests are switched off.'];
+    var a=Q.interior(P),d=V.dist;
+    var t3=eq(d(A,B),d(D,C),0.8)&&eq(d(B,C),d(A,D),0.8);
+    var t5=eq(a[0],a[2],0.6)&&eq(a[1],a[3],0.6);
+    var t7=d(V.mid(A,C),V.mid(B,D))<1.2;
+    var t8=(par(A,B,D,C,0.015)&&eq(d(A,B),d(D,C),0.8))||(par(B,C,A,D,0.015)&&eq(d(B,C),d(A,D),0.8));
+    var isP=par(A,B,D,C,0.04)&&par(B,C,A,D,0.04);
+    var f=function(k,v){return {k:k,v:v?'yes':'no',s:v?'ok':''}};
+    return [f('Opposite sides equal (8.3)',t3),f('Opposite angles equal (8.5)',t5),f('Diagonals bisect (8.7)',t7),f('One pair equal and parallel (8.8)',t8),{k:'Parallelogram',v:isP?'yes':'no',s:isP?'ok':'no'}];
+  },
+  controls:function(ctl,st,render,api){
+    button(ctl,'sTester-snap','Snap to a parallelogram',function(){var p=st.pts.map(function(x){return x.slice()});p[3]=[p[0][0]+p[2][0]-p[1][0],p[0][1]+p[2][1]-p[1][1]];
+      if(p[3][0]>18&&p[3][0]<582&&p[3][1]>18&&p[3][1]<382)api.reset(p);else api.reset(T0)});
+    button(ctl,'sTester-shuffle','Shuffle',function(){api.reset(shuffled())});
+    button(ctl,'sTester-reset','Reset',function(){api.reset(T0)});
+  }
+});
+
+/* ---------- Burfi: rectangle versus parallelogram, same perimeter ---------- */
+sim('sBurfi',{
+  h:300,label:'A 4 cm by 3 cm rectangle beside a parallelogram with the same side lengths',pts:[],drag:[],state:{a:65},
+  draw:function(L,st){
+    var th=st.a*Math.PI/180,w=4*U,h=3*U;
+    var R=[[60,230-h],[60+w,230-h],[60+w,230],[60,230]];
+    L.poly(R,'c1');L.right(R[3],R[2],R[0],10);
+    L.text([60+w/2,230-h/2],'4 cm × 3 cm','lblh');L.text([60+w/2,252],'4 cm','lbl');L.text([40,230-h/2],'3 cm','lbl');
+    var A=[310,230],B=[310+w,230],D=[310+h*Math.cos(th),230-h*Math.sin(th)],C=[B[0]+h*Math.cos(th),D[1]];
+    L.poly([A,B,C,D],'c2');
+    L.line(D,[D[0],230],'dash');L.right([D[0],230],[D[0]+10,230],D,9);
+    L.text([D[0]-18,230-h*Math.sin(th)/2],'h','lblh');
+    L.text([310+w/2,252],'4 cm','lbl');
+    L.text([C[0]+22,230-h*Math.sin(th)/2],'3 cm','lbl');
+  },
+  read:function(st){
+    var s=Math.sin(st.a*Math.PI/180);
+    return [{k:'Perimeter (both)',v:'14.0 cm'},{k:'Rectangle area',v:'12.0 cm²',s:'ok'},{k:'Parallelogram area (4 × h)',v:fmt(12*s,1)+' cm²',s:s>0.999?'ok':'no'}];
+  },
+  controls:function(ctl,st,render){
+    slider(ctl,'sBurfi-a','Slant angle',30,90,1,65,'°',function(v){st.a=v;render()});
+  }
+});
+})();
+(function(){
+'use strict';
+var Q=window.__q,V=Q.V,fmt=Q.fmt,cm=Q.cm,deg=Q.deg,eq=Q.eq,par=Q.par,area=Q.area,cen=Q.cen,sim=Q.sim,slider=Q.slider,checkbox=Q.checkbox,U=Q.U;
+function triValid(p){
+  for(var i=0;i<3;i++)if(p[i][0]<16||p[i][0]>584||p[i][1]<16||p[i][1]>384)return false;
+  return Math.abs(area(p))>3500;
+}
+var TRI=[[300,60],[110,330],[500,340]];
+function triLabels(L,P,names,ctr){names.forEach(function(n,i){L.vlabel(P[i],n,ctr,22)})}
+
+/* Theorem 8.9: mid-point theorem */
+sim('sMid',{
+  label:'Triangle ABC with mid-points E and F of AB and AC',names:['A','B','C'],pts:TRI,valid:triValid,state:{show:false},
+  draw:function(L,st){
+    var P=st.pts,A=P[0],B=P[1],C=P[2],E=V.mid(A,B),F=V.mid(A,C),ctr=cen(P);
+    L.poly(P,'fill');
+    if(st.show){
+      var D=V.add(F,V.sub(F,E));
+      L.poly([B,C,D,E],'hlf');L.line(F,D,'dash');L.line(C,D,'dash');L.dot(D,3.6);L.vlabel(D,'D',F,18);
+    }
+    L.poly(P,'edge');
+    L.line(E,F,'dash');
+    L.tick(A,E,1);L.tick(E,B,1);L.tick(A,F,2);L.tick(F,C,2);
+    L.dot(E,4.5);L.dot(F,4.5);
+    L.vlabel(E,'E',ctr,18);L.vlabel(F,'F',ctr,18);
+    triLabels(L,P,['A','B','C'],ctr);
+  },
+  read:function(st){
+    var P=st.pts,A=P[0],B=P[1],C=P[2],E=V.mid(A,B),F=V.mid(A,C),d=V.dist;
+    return [{k:'EF',v:cm(d(E,F))},{k:'BC',v:cm(d(B,C))},{k:'EF ÷ BC',v:fmt(d(E,F)/d(B,C),3),s:'ok'},
+      {k:'∠AEF',v:deg(V.angle(A,E,F))},{k:'∠ABC',v:deg(V.angle(A,B,C))},{k:'EF ∥ BC',v:par(E,F,B,C,0.01)?'yes':'no',s:'ok'}];
+  },
+  controls:function(ctl,st,render){checkbox(ctl,'sMid-show','Show the proof construction',false,function(v){st.show=v;render()})}
+});
+
+/* Theorem 8.10: line through E parallel to BC */
+sim('sT810',{
+  label:'Triangle ABC with a line through E on AB parallel to BC',names:['A','B','C'],pts:TRI,valid:triValid,state:{t:0.5},
+  draw:function(L,st){
+    var P=st.pts,A=P[0],B=P[1],C=P[2],E=V.lerp(A,B,st.t),F=V.lerp(A,C,st.t),ctr=cen(P);
+    var u=V.sub(F,E);
+    L.poly(P,'fill');L.poly(P,'edge');
+    L.line(V.sub(E,V.mul(u,3)),V.add(F,V.mul(u,3)),'dash');
+    if(eq(st.t,0.5,0.0005)){L.tick(A,F,2);L.tick(F,C,2);L.tick(A,E,1);L.tick(E,B,1)}
+    L.dot(E,4.5);L.dot(F,4.5);L.vlabel(E,'E',ctr,18);L.vlabel(F,'F',ctr,18);
+    triLabels(L,P,['A','B','C'],ctr);
+  },
+  read:function(st){
+    var P=st.pts,A=P[0],B=P[1],C=P[2],E=V.lerp(A,B,st.t),F=V.lerp(A,C,st.t),d=V.dist,mid=eq(st.t,0.5,0.0005);
+    var out=[{k:'AE',v:cm(d(A,E)),s:mid?'ok':''},{k:'EB',v:cm(d(E,B)),s:mid?'ok':''},{k:'AF',v:cm(d(A,F)),s:mid?'ok':''},{k:'FC',v:cm(d(F,C)),s:mid?'ok':''},
+      {k:'AF ÷ FC',v:fmt(st.t/(1-st.t),2),s:mid?'ok':''},{k:'AE ÷ EB',v:fmt(st.t/(1-st.t),2),s:mid?'ok':''},{k:'EF ∥ BC',v:'yes',s:'ok'}];
+    if(mid)out.push('E is the mid-point of AB, so F is the mid-point of AC: AF = FC.');
+    return out;
+  },
+  controls:function(ctl,st,render){
+    slider(ctl,'sT810-t','Position of E (AE ÷ AB)',0.1,0.9,0.05,0.5,'',function(v){st.t=v;render()});
+  }
+});
+
+/* Example 7: four congruent triangles */
+sim('sEx7',{
+  label:'Triangle ABC divided into four triangles by its mid-point triangle DEF',names:['A','B','C'],pts:TRI,valid:triValid,
+  draw:function(L,st){
+    var P=st.pts,A=P[0],B=P[1],C=P[2],D=V.mid(A,B),E=V.mid(B,C),F=V.mid(C,A),ctr=cen(P);
+    L.poly([A,D,F],'c1');L.poly([D,B,E],'c2');L.poly([F,E,C],'c3');L.poly([D,E,F],'c4');
+    L.poly(P,'edge');
+    L.dot(D,3.6);L.dot(E,3.6);L.dot(F,3.6);
+    L.vlabel(D,'D',ctr,18);L.vlabel(E,'E',ctr,18);L.vlabel(F,'F',ctr,18);
+    triLabels(L,P,['A','B','C'],ctr);
+  },
+  read:function(st){
+    var P=st.pts,A=P[0],B=P[1],C=P[2],D=V.mid(A,B),E=V.mid(B,C),F=V.mid(C,A),a=function(x){return fmt(Math.abs(area(x))/(U*U),2)+' cm²'};
+    return [{k:'ΔADF',v:a([A,D,F]),s:'ok'},{k:'ΔDBE',v:a([D,B,E]),s:'ok'},{k:'ΔFEC',v:a([F,E,C]),s:'ok'},{k:'ΔDEF',v:a([D,E,F]),s:'ok'},{k:'ΔABC',v:a(P)}];
+  }
+});
+
+/* Example 8: equal intercepts */
+sim('sEx8',{
+  h:400,label:'Three parallel lines cut by two transversals',pts:[],drag:[],state:{ap:60,aq:115,ny:290},
+  draw:function(L,st){
+    var ys=[110,200,st.ny],names=['l','m','n'];
+    ys.forEach(function(y,i){L.line([20,y],[580,y],'ln');L.text([566,y-12],names[i],'lblh')});
+    function trans(xm,ang){
+      var cot=Math.cos(ang*Math.PI/180)/Math.sin(ang*Math.PI/180);
+      var at=function(y){return [xm+(200-y)*cot,y]};
+      return {pts:ys.map(at),a:at(60),b:at(Math.min(380,st.ny+50))};
+    }
+    var p=trans(200,st.ap),q=trans(430,st.aq);
+    L.line(p.a,p.b,'edge');L.line(q.a,q.b,'edge');
+    ['A','B','C'].forEach(function(n,i){L.dot(p.pts[i],4.2);L.text([p.pts[i][0]-16,p.pts[i][1]-13],n,'vl')});
+    ['D','E','F'].forEach(function(n,i){L.dot(q.pts[i],4.2);L.text([q.pts[i][0]+16,q.pts[i][1]-13],n,'vl')});
+    L.text([p.b[0]-10,p.b[1]+2],'p','lblh');L.text([q.b[0]+10,q.b[1]+2],'q','lblh');
+    st.X={p:p.pts,q:q.pts};
+  },
+  read:function(st){
+    var p=st.X.p,q=st.X.q,d=V.dist,e1=eq(d(p[0],p[1]),d(p[1],p[2]),0.6),e2=eq(d(q[0],q[1]),d(q[1],q[2]),0.6);
+    return [{k:'AB',v:cm(d(p[0],p[1])),s:e1?'ok':''},{k:'BC',v:cm(d(p[1],p[2])),s:e1?'ok':''},{k:'AB ÷ BC',v:fmt(d(p[0],p[1])/d(p[1],p[2]),2),s:e1?'ok':''},
+      {k:'DE',v:cm(d(q[0],q[1])),s:e2?'ok':''},{k:'EF',v:cm(d(q[1],q[2])),s:e2?'ok':''},{k:'DE ÷ EF',v:fmt(d(q[0],q[1])/d(q[1],q[2]),2),s:e2?'ok':''}];
+  },
+  controls:function(ctl,st,render){
+    slider(ctl,'sEx8-p','Tilt of p',40,140,1,60,'°',function(v){st.ap=v;render()});
+    slider(ctl,'sEx8-q','Tilt of q',40,140,1,115,'°',function(v){st.aq=v;render()});
+    slider(ctl,'sEx8-n','Position of line n',260,330,10,290,'',function(v){st.ny=v;render()});
+  }
+});
+
+/* ---------- Quiz ---------- */
+var QS=[
+  {q:'What is the sum of the interior angles of any quadrilateral?',o:['180°','270°','360°','540°'],a:2,w:'A diagonal splits the quadrilateral into two triangles, each with angle sum 180°.'},
+  {q:'In parallelogram ABCD, ∠A = 70°. What is ∠B?',o:['70°','110°','90°','20°'],a:1,w:'Adjacent angles are interior angles on the same side of a transversal, so ∠A + ∠B = 180°.'},
+  {q:'The diagonals of a rhombus are always',o:['equal','perpendicular to each other','parallel','equal and perpendicular'],a:1,w:'They bisect each other at right angles (Example 2). They are equal only if the rhombus is a square.'},
+  {q:'Which single condition is enough to prove a quadrilateral is a parallelogram?',o:['One pair of opposite sides equal','One pair of opposite sides parallel','One pair of opposite sides equal and parallel','Diagonals are perpendicular'],a:2,w:'Theorem 8.8. Equal alone or parallel alone is not enough (a trapezium has one parallel pair).'},
+  {q:'In ΔABC, E and F are the mid-points of AB and AC. If BC = 12 cm, then EF =',o:['3 cm','6 cm','12 cm','24 cm'],a:1,w:'Mid-point theorem: EF = ½ BC = 6 cm.'},
+  {q:'Which statement is NOT true for a kite?',o:['Two pairs of adjacent sides are equal','Its diagonals are perpendicular','Both pairs of opposite sides are parallel','One diagonal bisects the other'],a:2,w:'A kite is not a parallelogram, so its opposite sides are not parallel.'},
+  {q:'The diagonals of a quadrilateral bisect each other and are equal. It must be a',o:['rhombus','rectangle','kite','trapezium'],a:1,w:'Bisecting diagonals give a parallelogram. Equal diagonals then force the angles to be right angles.'},
+  {q:'Two adjacent angles of a parallelogram are in the ratio 2 : 3. The angles are',o:['60° and 90°','72° and 108°','80° and 100°','45° and 135°'],a:1,w:'Adjacent angles add to 180°. 2k + 3k = 180° gives k = 36°, so 72° and 108°.'},
+  {q:'The bisectors of the angles of a parallelogram form a',o:['rhombus','square','rectangle','kite'],a:2,w:'Example 5: all four angles of the inner quadrilateral are 90°.'},
+  {q:'D, E, F are the mid-points of the sides of ΔABC, whose perimeter is 30 cm. The perimeter of ΔDEF is',o:['10 cm','15 cm','20 cm','30 cm'],a:1,w:'Each side of ΔDEF is half the matching side of ΔABC, so the perimeter is 15 cm.'}
+];
+var mount=document.getElementById('quizMount'),score=0,done=0;
+function renderQuiz(){
+  score=0;done=0;
+  mount.innerHTML='<div class="score">Score: <span id="qScore">0</span> / '+QS.length+' <button class="tbtn" id="qReset" type="button">Try again</button></div>';
+  QS.forEach(function(it,qi){
+    var card=document.createElement('div');card.className='quiz-card';
+    card.innerHTML='<h3>'+(qi+1)+'. '+it.q+'</h3><div class="opts"></div><div class="why" hidden></div>';
+    var box=card.querySelector('.opts'),why=card.querySelector('.why');
+    it.o.forEach(function(t,oi){
+      var b=document.createElement('button');b.type='button';b.className='opt';b.id='q'+qi+'o'+oi;b.textContent=t;
+      b.addEventListener('click',function(){
+        var all=box.querySelectorAll('.opt');
+        all.forEach(function(x,xi){x.disabled=true;if(xi===it.a)x.classList.add('right')});
+        if(oi===it.a){score++}else b.classList.add('wrong');
+        why.hidden=false;why.textContent=(oi===it.a?'Correct. ':'Not quite. ')+it.w;
+        done++;document.getElementById('qScore').textContent=score;
+      });
+      box.appendChild(b);
+    });
+    mount.appendChild(card);
+  });
+  document.getElementById('qReset').addEventListener('click',renderQuiz);
+}
+renderQuiz();
+
+/* ---------- Theme button and chapter map ---------- */
+var root=document.documentElement,btn=document.getElementById('themeBtn');
+function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches}
+function label(){btn.textContent=isDark()?'Light theme':'Dark theme'}
+btn.addEventListener('click',function(){root.setAttribute('data-theme',isDark()?'light':'dark');label()});
+label();
+try{
+  var links=[].slice.call(document.querySelectorAll('.map a')),secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})}});
+  },{rootMargin:'-20% 0px -70% 0px'});
+  secs.forEach(function(s){if(s)io.observe(s)});
+}catch(x){}
+})();
+</script>
+
+</body></html>
